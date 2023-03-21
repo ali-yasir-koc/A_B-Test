@@ -1,16 +1,13 @@
 import pandas as pd
 import numpy as np
 import os
-import functions as f
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 from statsmodels.graphics.gofplots import qqplot
-from scipy.stats import shapiro, levene, ttest_ind, mannwhitneyu, f_oneway, kruskal
+from scipy.stats import shapiro, levene, kruskal
 
-path='C:\\Users\\hseym\\PycharmProjects\\pythonProject1\\Test\\A_B Testi'
-os.chdir(path)
-os.getcwd()
+""" Import Data and Some Setting"""
 f.display()
 plt.style.use('fivethirtyeight')
 
@@ -23,7 +20,7 @@ print(data.describe().T)
 data.groupby("Promotion").agg({"SalesInThousands":["count","mean","median"]})
 data.groupby(["MarketSize","Promotion"]).agg({"SalesInThousands":["count","mean","median"]})
 
-"""  ANOVA (Analysis of Variance)"""                                                                                      #It is used to compare the mean of more than two groups.
+"""  ANOVA (Analysis of Variance)"""                                                                                     
 """ 1-) Normality assumption - Graphics """
 ## 1- Histogram and boxplot
 data.loc[data["Promotion"]==1,"SalesInThousands"].plot.hist()
@@ -65,7 +62,8 @@ for market_size in market_size:
 for promotion in list (data["Promotion"].unique()):
     pvalue = shapiro(data.loc[data["Promotion"] == promotion, "SalesInThousands"])[1]
     print("Promotion:", promotion, "p-value: %.4f" % (pvalue))
-#p value 0.05den küçük olduğu için null hipoteizimizi reddediyoruz. (null=dağılım noramldir)
+
+## p_value is smaller than 0.05.So, Null Hypotesis is fail to rejected and variables do not distribute normally.
 
 """ 2-) Variance Homogeneity - Levene Test """
 test_stat, pvalue = levene(data.loc[data["Promotion"] == 1, "SalesInThousands"],
@@ -73,22 +71,22 @@ test_stat, pvalue = levene(data.loc[data["Promotion"] == 1, "SalesInThousands"],
                            data.loc[data["Promotion"] == 3, "SalesInThousands"])
 
 print('Test Stat = %.4f, p-value = %.4f' % (test_stat, pvalue))
-# varyansları arasında bir fark yoktur. p value 0.05den büyük olduğu için.
+## This is second assumption and p_value is bigger than 0.05. So, we can say that variance of variables is homogenise.
 
 """ 3-) Nonparametrik ANOVA Test - Kruskal Wallis """
 
 kruskal(data.loc[data["Promotion"] == 1, "SalesInThousands"],
         data.loc[data["Promotion"] == 2, "SalesInThousands"],
         data.loc[data["Promotion"] == 3, "SalesInThousands"])
-#ortalamları arasında fark anlamlı derecede vardır.p küçük 0.05 olduğu için
+## We use non parametric test because variables do not distribute normally.
+## p_value is smaller than 0.05 and we can say that there is statistics important differences between promotions means.
 
-""" 4-) Tukey Test """
 
-from statsmodels.stats.multicomp import MultiComparison
-comparison = MultiComparison(data["SalesInThousands"], data["Promotion"])
-tukey = comparison.tukeyhsd(0.05)
-print(comparison.tukeyhsd(0.05))
 
 data.groupby("Promotion").agg({"SalesInThousands":["count","mean","median"]})
+data.groupby(["MarketSize","Promotion"]).agg({"SalesInThousands":["count","mean","median"]})
+## When we investigate the means of variables promotion 1 and promotion 3, they effect to sales quantities approximately similar for all market size.
+## Also, promotion 3 can represented by median value for large market size and so we can say that promotion 3 is more effectively for large market size.
+## And also, promotions 2 is worst campaign for this new product.
 
 
