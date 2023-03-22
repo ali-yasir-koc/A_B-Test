@@ -63,7 +63,7 @@ for promotion in list (data["Promotion"].unique()):
     pvalue = shapiro(data.loc[data["Promotion"] == promotion, "SalesInThousands"])[1]
     print("Promotion:", promotion, "p-value: %.4f" % (pvalue))
 
-## p_value is smaller than 0.05.So, Null Hypotesis is fail to rejected and variables do not distribute normally.
+## p_value is smaller than 0.05.So, Null Hypotesis is rejected and variables do not distribute normally.
 
 """ 2-) Variance Homogeneity - Levene Test """
 test_stat, pvalue = levene(data.loc[data["Promotion"] == 1, "SalesInThousands"],
