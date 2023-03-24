@@ -1,15 +1,10 @@
 import pandas as pd
 import numpy as np
-import os
-import functions as f
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import shapiro
 import scipy.stats as stats
 
-path = "C:\\Users\\hseym\\OneDrive\\Masaüstü\\Yeni klasör\\sample data and codes\\bidding_AB_test"
-os.chdir(path)
-f.display()
 """ Data Import and Explore """
 data = pd.read_csv("control_group.csv", sep=";",parse_dates = ["Date"])
 data.head()
@@ -59,15 +54,16 @@ group_b.plot.hist()
 test_ist_a, p_value_a  = shapiro(group_a)
 test_ist_b, p_value_b  = shapiro(group_b)
 print("p value of a group = %.4f" % (p_value_a))
-print("p value of b group = %.4f" % (p_value_b))                                                                        ### yani bunlar normal dağılmıyor.
+print("p value of b group = %.4f" % (p_value_b))                                                                       
 
 """ Assumption 2 :Homogeneity"""
-stats.levene(group_a,group_b)                                                                                           ### homojen dağılmıyor
+stats.levene(group_a,group_b)                                                                                          
 
 """ Nonparametic t Test """
 stats.mannwhitneyu(group_a,group_b)
 
 ## So, these biddings are not similar.
+
 df = pd.DataFrame({"Groups":["A","B"],
                    "Mean":[group_a.mean(), group_b.mean()],
                    "Median":[group_a.median(), group_b.median()]})
